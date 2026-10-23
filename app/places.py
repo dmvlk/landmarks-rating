@@ -1,76 +1,60 @@
-def add_place(
-    places: list[dict],
-    name: str,
-    address: str,
-    description: str,
-) -> dict | None:
-    if len(name.strip()) < 3:
-        print("Ошибка: название места слишком короткое")
-        return None
-    if len(address.strip()) < 3:
-        print("Ошибка: адрес слишком короткий")
-        return None
-    if len(description.strip()) < 3:
-        print("Ошибка: описание слишком короткое")
-        return None
+from app.models import Place
+
+
+def add_place(places: list[Place],
+              name: str,
+              address: str,
+              description: str) -> Place | None:
 
     new_id = _next_id(places)
-    place = {
-        "id": new_id,
-        "name": name.strip(),
-        "address": address.strip(),
-        "description": description.strip(),
-    }
+    place = Place(new_id, name, address, description)
+
+    if not place.is_valid():
+        print(
+            "Ошибка: данные места некорректны "
+            "(поля должны быть не короче 3 символов)"
+        )
+        return None
+
     places.append(place)
     return place
 
 
-def find_place_by_id(places: list[dict], place_id: int) -> dict | None:
+def find_place_by_id(places: list[Place], place_id: int) -> Place | None:
     for place in places:
-        if place["id"] == place_id:
+        if place.id == place_id:
             return place
     return None
 
 
-def find_places_by_name(places: list[dict], query: str) -> list[dict]:
+def find_places_by_name(places: list[Place], query: str) -> list[Place]:
     query_lower = query.strip().lower()
-    result = []
-    for place in places:
-        if query_lower in place["name"].lower():
-            result.append(place)
-    return result
+    return [place for place in places if query_lower in place.name.lower()]
 
 
-def delete_place(
-    places: list[dict],
-    reviews: list[dict],
-    place_id: int,
-) -> bool:
+def delete_place(places: list[Place], reviews: list, place_id: int) -> bool:
     place = find_place_by_id(places, place_id)
     if place is None:
         print("Ошибка: место не найдено")
         return False
 
     # удаляем отзывы, привязанные к этому месту
-    reviews[:] = [r for r in reviews if r["place_id"] != place_id]
+    reviews[:] = [r for r in reviews if r.place.id != place_id]
     places.remove(place)
     return True
 
 
-def show_places(places: list[dict]) -> None:
+def show_places(places: list[Place]) -> None:
     if not places:
         print("Список мест пуст")
         return
     for place in places:
-        print(f"[{place['id']}] {place['name']} — {place['address']}")
-        print(f"    {place['description']}")
+        print(place)
+        print(f"    {place.description}")
 
 
-def _next_id(places: list[dict]) -> int:
+def _next_id(places: list[Place]) -> int:
     if not places:
         return 1
-    max_id = 0
-    for place in places:
-        if place["id"] > max_id:
-            max_id = place["id"]
-    return max_id + 1
+
+    return max(place.id for place in places) + 1

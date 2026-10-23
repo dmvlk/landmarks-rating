@@ -1,37 +1,38 @@
 from app.places import find_place_by_id
+from app.models import Place, Review, User
 
 
 def add_review(
-    reviews: list[dict],
-    places: list[dict],
+    reviews: list[Review],
+    places: list[Place],
     place_id: int,
+    user: User,
     rating: int,
     comment: str,
-) -> dict | None:
-    if find_place_by_id(places, place_id) is None:
+) -> Review | None:
+    """Создать отзыв."""
+    place = find_place_by_id(places, place_id)
+    if place is None:
         print("Ошибка: место не найдено")
-        return None
-    if not isinstance(rating, int) or rating < 1 or rating > 5:
-        print("Ошибка: оценка должна быть целым числом от 1 до 5")
-        return None
-    if len(comment.strip()) < 3:
-        print("Ошибка: комментарий слишком короткий")
         return None
 
     new_id = _next_id(reviews)
-    review = {
-        "id": new_id,
-        "place_id": place_id,
-        "rating": rating,
-        "comment": comment.strip(),
-    }
+    review = Review(new_id, place, user, rating, comment)
+
+    if not review.is_valid():
+        print(
+            "Ошибка: некорректная оценка (1-5) "
+            "или слишком короткий комментарий"
+        )
+        return None
+
     reviews.append(review)
     return review
 
 
-def delete_review(reviews: list[dict], review_id: int) -> bool:
+def delete_review(reviews: list[Review], review_id: int) -> bool:
     for review in reviews:
-        if review["id"] == review_id:
+        if review.id == review_id:
             reviews.remove(review)
             return True
 
@@ -39,34 +40,23 @@ def delete_review(reviews: list[dict], review_id: int) -> bool:
     return False
 
 
-def get_average_rating(reviews: list[dict], place_id: int) -> float:
-    total = 0
-    count = 0
-    for review in reviews:
-        if review["place_id"] == place_id:
-            total += review["rating"]
-            count += 1
-    if count == 0:
+def get_average_rating(reviews: list[Review], place_id: int) -> float:
+    target_reviews = [r for r in reviews if r.place.id == place_id]
+    if not target_reviews:
         return 0.0
-    return total / count
+    total = sum(r.rating for r in target_reviews)
+    return total / len(target_reviews)
 
 
-def show_reviews(reviews: list[dict], places: list[dict]) -> None:
+def show_reviews(reviews: list[Review]) -> None:
     if not reviews:
         print("Список отзывов пуст")
         return
     for review in reviews:
-        place = find_place_by_id(places, review["place_id"])
-        place_name = place["name"] if place else "Неизвестное место"
-        print(f"[{review['id']}] {place_name} — оценка {review['rating']}")
-        print(f"    {review['comment']}")
+        print(review)
 
 
-def _next_id(reviews: list[dict]) -> int:
+def _next_id(reviews: list[Review]) -> int:
     if not reviews:
         return 1
-    max_id = 0
-    for review in reviews:
-        if review["id"] > max_id:
-            max_id = review["id"]
-    return max_id + 1
+    return max(review.id for review in reviews) + 1

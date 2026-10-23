@@ -1,24 +1,24 @@
-from app.places import add_place
+from app.models import Place, User
 from app.reviews import add_review, get_average_rating
 
 
 def test_add_review():
-    places = []
+    places = [Place(1, "Парк", "Москва", "Красиво")]
+    user = User(1, "Тест", "test@gmail.com")
     reviews = []
-    place = add_place(places, "Парк", "Москва", "Описание")
 
-    add_review(reviews, places, place["id"], 5, "Отличное место")
+    review = add_review(reviews, places, 1, user, 5, "Отлично")
     assert len(reviews) == 1
-    assert reviews[0]["rating"] == 5
+    assert review.rating == 5
 
 
 def test_average_rating():
-    places = []
+    places = [Place(1, "Парк", "Москва", "Красиво")]
+    user = User(1, "Тест", "test@gmail.com")
     reviews = []
-    place = add_place(places, "Парк", "Москва", "Описание")
 
-    add_review(reviews, places, place["id"], 4, "Хорошо")
-    add_review(reviews, places, place["id"], 5, "Отлично")
+    add_review(reviews, places, 1, user, 4, "Хорошо")
+    add_review(reviews, places, 1, user, 5, "Отлично")
 
-    avg = get_average_rating(reviews, place["id"])
+    avg = get_average_rating(reviews, 1)
     assert avg == 4.5
