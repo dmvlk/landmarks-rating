@@ -9,15 +9,15 @@
     {% for review in reviews %}
         <li class="list-group-item p-4">
             <div class="d-flex justify-content-between align-items-center mb-2">
-                <h5 class="mb-0 fw-bold">{{ review.place.name }}</h5>
-                <span class="fs-5 rating-stars">
+                <h5 class="mb-0 fw-bold">{{ review.place_name|default:"Неизвестное место" }}</h5>
+                <span class="fs-5" style="color: #ffc107;">
                     {% for i in "12345"|make_list %}
                         {% if forloop.counter <= review.rating %}★{% else %}☆{% endif %}
                     {% endfor %}
                 </span>
             </div>
             <p class="mb-2">{{ review.comment }}</p>
-            <small class="text-muted">Автор: {{ review.user.name }}</small>
+            <small class="text-muted">Автор: {{ review.user_name|default:"Аноним" }}</small>
         </li>
     {% empty %}
         <li class="list-group-item p-4 text-muted">Пока нет отзывов.</li>
