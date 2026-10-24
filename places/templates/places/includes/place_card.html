@@ -1,0 +1,10 @@
+<div class="col-md-6 mb-4">
+    <div class="card h-100 shadow-sm border-0">
+        <div class="card-body">
+            <h5 class="card-title fw-bold">{{ place.name|default:"Без названия" }}</h5>
+            <h6 class="card-subtitle mb-2 text-muted">{{ place.address }}</h6>
+            <p class="card-text">{{ place.description }}</p>
+            <a href="{% url 'places:detail' place.id %}" class="btn btn-sm btn-custom mt-auto">Подробнее</a>
+        </div>
+    </div>
+</div>

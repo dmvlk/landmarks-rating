@@ -1,1 +1,7 @@
-[]
+[
+  {
+    "id": 1,
+    "name": "Студент Мирэа",
+    "email": "studentmirea@gmail.com"
+  }
+]

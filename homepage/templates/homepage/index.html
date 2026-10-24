@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}Главная{% endblock %}
+
+{% block content %}
+<div class="p-5 mb-4 bg-white rounded-3 shadow-sm border-top border-4" style="border-color: #6d597a !important;">
+    <h1 class="display-5 fw-bold text-dark">Добро пожаловать!</h1>
+    <p class="lead text-muted">
+        Здесь вы можете делиться впечатлениями о парках, музеях, ресторанах
+        и других интересных местах нашего города.
+    </p>
+    <hr class="my-4">
+    <div class="d-flex gap-3">
+        <a href="{% url 'places:list' %}" class="btn btn-custom btn-lg px-4">
+            Посмотреть места
+        </a>
+        <a href="{% url 'reviews:list' %}" class="btn btn-outline-custom btn-lg px-4">
+            Читать отзывы
+        </a>
+    </div>
+</div>
+{% endblock %}

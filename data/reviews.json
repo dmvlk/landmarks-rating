@@ -1,1 +1,16 @@
-[]
+[
+  {
+    "id": 1,
+    "place_id": 1,
+    "user_id": 1,
+    "rating": 5,
+    "comment": "Хороший вуз"
+  },
+  {
+    "id": 2,
+    "place_id": 2,
+    "user_id": 1,
+    "rating": 2,
+    "comment": "фуу"
+  }
+]

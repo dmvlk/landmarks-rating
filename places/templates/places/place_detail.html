@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}{% if place %}{{ place.name }}{% else %}Не найдено{% endif %}{% endblock %}
+
+{% block content %}
+{% if place %}
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-body p-4">
+            <h1 class="card-title fw-bold">{{ place.name }}</h1>
+            <h6 class="text-muted mb-3">{{ place.address }}</h6>
+            <p class="lead">{{ place.description }}</p>
+            <hr>
+            <p class="fs-5">
+                <strong>Средняя оценка:</strong>
+                <span class="{{ rating_color }} fw-bold">{{ rating_text }}</span>
+            </p>
+            <a href="{% url 'places:list' %}" class="btn btn-outline-custom mt-2">
+                Назад к местам
+            </a>
+        </div>
+    </div>
+{% else %}
+    <div class="alert alert-danger shadow-sm mt-4">
+        <h4>Место не найдено</h4>
+        <a href="{% url 'places:list' %}" class="btn btn-outline-danger mt-2">К списку мест</a>
+    </div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,26 @@
+body {
+    background-color: #f4f4f6;
+}
+.navbar-custom {
+    background-color: #2b2b36;
+}
+.btn-custom {
+    background-color: #6d597a;
+    color: white;
+    border: none;
+}
+.btn-custom:hover {
+    background-color: #5a4865;
+    color: white;
+}
+.btn-outline-custom {
+    border-color: #6d597a;
+    color: #6d597a;
+}
+.btn-outline-custom:hover {
+    background-color: #6d597a;
+    color: white;
+}
+.rating-stars {
+    color: #ffc107;
+}
