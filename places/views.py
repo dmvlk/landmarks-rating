@@ -1,44 +1,26 @@
-from django.shortcuts import render
-from db.database import get_connection
+from django.shortcuts import render, get_object_or_404
+from django.db.models import Avg, Count
+from places.models import Place
 
 
 def places(request):
-    conn = get_connection()
-    rows = conn.execute("""
-        SELECT id, name, address, description 
-        FROM places 
-        ORDER BY name
-    """).fetchall()
-    conn.close()
+    places_list = Place.objects.order_by("name")
+    places_list = places_list.annotate(
+        avg_rating=Avg("reviews__rating"),
+        reviews_count=Count("reviews")
+    )
 
-    places_data = [dict(row) for row in rows]
-
-    context = {"places": places_data}
+    context = {"places": places_list}
     return render(request, "places/place_list.html", context)
 
 
 def place_detail(request, place_id):
-    conn = get_connection()
+    place = get_object_or_404(Place, pk=place_id)
 
-    row = conn.execute(
-        "SELECT * FROM places WHERE id = ?", [place_id]
-    ).fetchone()
-
-    if row is None:
-        conn.close()
-        return render(
-            request, "places/place_detail.html", {"place": None}, status=404
-        )
-
-    place = dict(row)
-
-    rating_row = conn.execute("""
-        SELECT AVG(rating) as avg_rating, COUNT(*) as count
-        FROM reviews
-        WHERE place_id = ?
-    """, [place_id]).fetchone()
-
-    rating_info = dict(rating_row)
+    rating_info = place.reviews.aggregate(
+        avg_rating=Avg("rating"),
+        count=Count("id")
+    )
 
     if rating_info["count"] > 0:
         rating_text = (
@@ -52,8 +34,6 @@ def place_detail(request, place_id):
     else:
         rating_text = "Нет отзывов"
         rating_color = "text-muted"
-
-    conn.close()
 
     context = {
         "place": place,

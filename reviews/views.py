@@ -1,24 +1,11 @@
 from django.shortcuts import render
-from db.database import get_connection
+from reviews.models import Review
 
 
 def reviews(request):
-    conn = get_connection()
-    rows = conn.execute("""
-        SELECT
-            reviews.id,
-            reviews.rating,
-            reviews.comment,
-            places.name AS place_name,
-            users.name AS user_name
-        FROM reviews
-        JOIN places ON reviews.place_id = places.id
-        JOIN users ON reviews.user_id = users.id
-        ORDER BY reviews.id DESC
-    """).fetchall()
-    conn.close()
+    reviews_list = Review.objects.select_related(
+        "place", "user"
+    ).order_by("-id")
 
-    reviews_data = [dict(row) for row in rows]
-
-    context = {"reviews": reviews_data}
+    context = {"reviews": reviews_list}
     return render(request, "reviews/review_list.html", context)
